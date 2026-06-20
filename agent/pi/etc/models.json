@@ -1,0 +1,19 @@
+{
+    "providers": {
+        "llama.cpp": {
+            "baseUrl": "http://localhost:1337/v1",
+            "api": "openai-completions",
+            "apiKey": "none",
+            "models": [
+                { "id": "local/128k-text-image",
+                  "contextWindow": 128000,
+                  "input": ["text", "image"]
+                },
+                { "id": "local/256k-text-image",
+                  "contextWindow": 256000,
+                  "input": ["text", "image"]
+                }
+            ]
+        }
+    }
+}

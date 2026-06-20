@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# External sandbox for locking down the Pi coding agent (https://pi.dev)
+# which only knows YOLO mode.
+#
+# Allows READ access to ALL directories on the host.
+#
+# Bars WRITE access to all directories except for the current working
+# directory and needed system and configuration directories.
+#
+# NOTE: Networking is left intact. The purpose of the sandbox is to
+#       prevent destructive local actions by the LLM via the agent
+#       harness.
+#
+# NOTE: A malicious agent could leak found keys or remote in to hosts
+#       with SSH key authentications and go haywire.
+#
+# Troubleshoot with `strace --follow-forks -t -o strace.log pi-sandbox`
+#
+# Usage:
+#
+#   pi-sandbox-permissive PI_ARGS
+#
+
+WORK_DIR="$(pwd)"
+readonly WORK_DIR
+
+declare -a ARGS=()
+ARGS+=(--new-session)
+ARGS+=(--die-with-parent)
+ARGS+=(--ro-bind / /)
+ARGS+=(--dev-bind /dev/null /dev/null)
+ARGS+=(--dev-bind /dev/urandom /dev/urandom)
+ARGS+=(--tmpfs /tmp)
+ARGS+=(--bind ~/.pi ~/.pi)
+ARGS+=(--bind "$WORK_DIR" "$WORK_DIR")
+
+# Bar write access to workspace critical directories to prevent agent tampering.
+# Adjust if you want the agent to make code commit autonomously.
+for d in .git .hg .pi; do
+    ARGS+=(--ro-bind-try "$WORK_DIR/$d" "$WORK_DIR/$d")
+done
+readonly ARGS
+
+exec bwrap --setenv PS1 "sandbox$ " "${ARGS[@]}" pi "$@"
