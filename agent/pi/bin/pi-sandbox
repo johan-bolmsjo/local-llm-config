@@ -32,11 +32,9 @@ while read -r bind; do
 done <<EOF
 /bin
 /lib
+/lib32
 /lib64
-/sys/fs/cgroup
-/usr/bin
-/usr/lib
-/usr/share
+/usr
 EOF
 
 # read-only: System configuration
