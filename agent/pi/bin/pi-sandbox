@@ -42,6 +42,7 @@ ARGS+=(--dir /etc)
 while read -r bind; do
     ARGS+=(--ro-bind-try "$bind" "$bind")
 done <<EOF
+/etc/alternatives
 /etc/gai.conf
 /etc/host.conf
 /etc/hostname
@@ -52,16 +53,24 @@ done <<EOF
 /etc/ld.so.preload
 /etc/localtime
 /etc/nsswitch.conf
+/etc/pki
 /etc/resolv.conf
-/etc/ssl/openssl.cnf
+/etc/ssl
 EOF
 
-# read-only: User home directory
+
+# Default empty /home
 ARGS+=(--dir /home)
+
+# read-only: Select paths under home directory
 while read -r bind; do
     ARGS+=(--ro-bind-try "$bind" "$bind")
 done <<EOF
-$HOME/.local/share/pi-node
+$HOME/.local/bin
+$HOME/.local/include
+$HOME/.local/lib
+$HOME/.local/lib64
+$HOME/.local/share
 EOF
 
 # read/write: Pi agent configuration and current working directory
