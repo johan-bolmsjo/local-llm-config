@@ -54,9 +54,7 @@ llama_run_model() {
     #   --ctx-size    Context size in tokens
     #   --parallel    Number of server slots
     #
-    # There's also `--cache-type-k` and `--cache-type-v` that results in model regressions.
-    #
-    ARGS+=(--kv-unified --ctx-size 262144 --parallel 1)
+    ARGS+=(--kv-unified --cache-type-k f16 --cache-type-v f16 --ctx-size 262144 --parallel 1)
 
     # Prompt cache tuning:
     #
