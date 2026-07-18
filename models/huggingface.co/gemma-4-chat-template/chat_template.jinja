@@ -1,3 +1,9 @@
+{#
+  Template: Google Gemma 4 Canonical Chat Template
+  Author: Google Gemma Engineering Team
+  Published: 2026-07-09
+  Context: Fixed tool-calling loops, turn closures, and thinking content-ordering.
+#}
 {%- macro format_parameters(properties, required, filter_keys=false) -%}
     {%- set standard_keys = ['description', 'type', 'properties', 'required', 'nullable'] -%}
     {%- set ns = namespace(found_first=false) -%}
@@ -363,7 +369,7 @@
         {%- if ns.prev_message_type == 'tool_call' and not ns_tr_out.flag -%}
             {{- '<|tool_response>' -}}
         {%- elif continues_into_next -%}
-        {%- elif not (ns_tr_out.flag and not has_content) -%}
+        {%- elif not (ns_tr_out.flag and not has_content and not next_nt.found) -%}
             {{- '<turn|>\n' -}}
         {%- endif -%}
 
