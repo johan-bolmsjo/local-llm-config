@@ -71,6 +71,8 @@ $HOME/.local/include
 $HOME/.local/lib
 $HOME/.local/lib64
 $HOME/.local/share
+$(go env GOROOT 2>/dev/null || true)
+$(go env GOENV 2>/dev/null || true)
 EOF
 
 # read/write: Pi agent configuration and current working directory
@@ -80,6 +82,8 @@ while read -r bind; do
 done <<EOF
 $HOME/.pi
 $WORK_DIR
+$(go env GOCACHE 2>/dev/null || true)
+$(go env GOMODCACHE 2>/dev/null || true)
 EOF
 
 # Bar write access to workspace critical directories to prevent agent tampering.
