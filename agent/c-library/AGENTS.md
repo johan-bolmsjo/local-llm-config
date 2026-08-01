@@ -12,15 +12,6 @@ All tooling, code style, and architectural decisions are documented below.
 
 - Always ask before removing functionality or code that appears intentional.
 
-## Language and Standard
-
-| Setting         | Value                              |
-|-----------------|------------------------------------|
-| Standard        | **C23**                            |
-| Extensions      | None — strict standard conformance |
-| Encoding        | UTF-8 (NFC)                        |
-| Line endings    | LF (`\n`)                          |
-
 ## Coding Conventions
 
 ### 1. Naming
@@ -33,7 +24,7 @@ Avoid needless uncommon abbreviations.
 
 1. Functions that receives an "object" (defined below) as the first argument are named by the type
    of the object in PascalCase joined with an underscore (`_`) and the "method" operating on the
-   object in camelCase. This style is commonly used in C for a limited form of object oriented
+   object in camelCase. This style is commonly used in C for a rudimentary form of object oriented
    programming.
 
 ```c
@@ -358,84 +349,67 @@ int someFunc(const void* data, size_t dataLen);
 ### 10. Comments and Documentation
 
 - The public API is documented using Go's (golang) concise documentation style with '//' as the line
-  comment marker. Use plain English to describe behavior of functions and purpose of types with a
-  line length of 80 characters.
+  comment marker. Use plain English to describe the behavior of functions and the purpose of types.
 
 ```c
 // GOOD: Update the hash with additional data. Returns true on success.
 bool MyHash_update(MyHash* hash, const void* data, size_t dataLen);
 ```
 
-- The overall high level functionality is documented in `README.md`.
-- **Do not** use em-dash in comments. Use other punctuation such as comma, colon or semi-colon depending on the situation.
+- The project's high level functionality is documented in the top level `README.md` file.
+- **Do not** use em-dash in comments. Use other punctuation such as comma, colon or semi-colon as suitable.
 
 ## Dependencies
 
-- **Zero runtime dependencies** unless explicitly documented
-- If third-party libraries are required, they must be:
-  1. Listed in `README.md` and `meson.build`
-  2. Optional with fallback implementations when possible
-  3. Licenses compatible with the library's license
+- **Zero runtime dependencies** unless explicitly documented.
+- If third-party libraries are required, they must be listed in `README.md`.
 
 ## Project Structure
 
-```
-mylib/
-├── include/
-│   └── mylib/
-│       ├── foo.h            ← Public API of `foo.c`
-│       └── mylib.h          ← Public API (optional single header or facade)
-├── src/
-│   ├── foo.c                ← Implementation source file
-│   ├── foo_test.c           ← Unit tests of `foo.c`
-│   ├── foo.h                ← Optional library internal API of `foo.c`
-│   ├── bar.c                ← Implementation source file
-│   ├── bar_test.c           ← Unit tests of `bar.c`
-│   └── ...
-├── examples/
-│   └── mylib_example.c      ← Example program
-├── Makefile                 ← Build wrapper
-├── meson.build              ← Build configuration
-├── README.md                ← Library documentation
-├── LICENSE                  ← Library license conditions
-└── AGENTS.md                ← This file
-```
+- Library public header files (exported interfaces) under `include/`
+- Library sources, internal header files (for sharing details between library compilation units) and unit tests under `src/`
+- Library example programs under `examples/`. These are stand alone programs that link against the public library API.
+- Unit tests are post-fixed with `_test`, for example `foo_test.c` test `foo.c`.
+- Documentation under `docs/` (except for top level `README.md`).
 
 ## Build System
 
-**Meson** is used for building and testing the software.
+**Meson** is used as the underlying build system.
 
-A simple makefile wrapper provides easy access to release checks:
+A makefile wrapper provides easy access to release checks:
 
 ```bash
-make clean       # Remove build artifacts
-make format      # Format code
-make lint        # Lint code
-make test        # Run tests
-make test-cover  # Run tests with coverage
-make debug       # Debug build
-make release     # Release build
-make sanitize    # ASAN+UBSAN build
-make cover       # Coverage build
+make clean        # Remove build artifacts
+make check        # Pre-commit checks
+make check-extra  # Extra pre-commit checks
+make format       # Format code
+make lint         # Lint code
+make test         # Run tests
+make test-cover   # Run tests with coverage
+make debug        # Debug build
+make release      # Release build
+make sanitize     # ASAN+UBSAN build
+make cover        # Coverage build
+make fuzz         # Fuzzing build
+make fuzz-corpus  # Generate initial corpus
+make fuzz-run     # Start fuzzing
+make fuzz-cover   # Generate coverage report of fuzzer progress
 ```
 
-**NOTE:** `make format` performs in-place updates of C source and header under the project root!
+**NOTE:** `make format` performs in-place updates of uncommited project source files!
 
 Build variants have separate output directories:
 
-```
-build/
-├── coverage
-├── debug
-├── release
-└── sanitize
-```
+- **`build/debug`**: Debug build artifacts
+- **`build/release`**: Release build artifacts 
+- **`build/sanitize`**: ASAN+UBSAN build artifacts
+- **`build/cover`**: Coverage build artifacts
+- **`build/fuzz`**: Fuzzing build artifacts
 
 ## Unit Tests
 
-Unit test conventsion:
+Unit test conventions:
 
-- Every public function has at least one test covering the happy path
 - Prefer testing the public API when conventient, else test internal API
 - Every error-returning function have tests for each documented error condition
 - Name test files to match source: `foo_test.c` for `foo.c`
@@ -443,19 +417,12 @@ Unit test conventsion:
 - Use simple assertion macros for tests (defined in `unittest.h`)
 - The unit test API is defined in header file `unittest.h`
 
-Example unit test assert function in `unittest.h`:
-```c
-#define ASSERT_EQ(a, b) do { \
-    if ((a) != (b)) { fprintf(stderr, "FAIL: %s == %s at %s:%d\n", \
-        #a, #b, __FILE__, __LINE__); exit(1); } } while(0)
-```
-
 Example unit test:
 ```c
 void
-testMyLibraryFunction()
+testSomeFunction()
 {
-    ASSERT_EQ(42, myLibraryFunction());
+    ASSERT_EQ(42, someFunction());
 }
 ```
 
@@ -463,10 +430,8 @@ testMyLibraryFunction()
 
 Checks that MUST pass for a code change be considered complete:
 
-- [ ] Public API is stable; no breaking changes unless explicitly permitted
+- [ ] The public library API is stable; no breaking changes unless explicitly permitted
 - [ ] Code is formatted (`make format`)
 - [ ] Code is linted (`make lint`) without reported violations
 - [ ] Code is tested (`make test`) without errors
 - [ ] Code builds without warnings (`make release`)
-
-Consider running the checks after completed sub-tasks.
