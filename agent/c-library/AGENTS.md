@@ -379,21 +379,24 @@ bool MyHash_update(MyHash* hash, const void* data, size_t dataLen);
 A makefile wrapper provides easy access to release checks:
 
 ```bash
-make clean        # Remove build artifacts
-make check        # Pre-commit checks
-make check-extra  # Extra pre-commit checks
-make format       # Format code
-make lint         # Lint code
-make test         # Run tests
-make test-cover   # Run tests with coverage
-make debug        # Debug build
-make release      # Release build
-make sanitize     # ASAN+UBSAN build
-make cover        # Coverage build
-make fuzz         # Fuzzing build
-make fuzz-corpus  # Generate initial corpus
-make fuzz-run     # Start fuzzing
-make fuzz-cover   # Generate coverage report of fuzzer progress
+make check              # Pre-commit checks
+make check-extra        # Extra pre-commit checks
+make format             # Format code
+make lint               # Lint code
+make test               # Run tests
+make test-coverage      # Run tests with coverage
+make debug              # Debug build
+make debug-install      # Install debug build
+make release            # Release build
+make release-install    # Install release build
+make sanitize           # ASAN+UBSAN build
+make sanitize-install   # Install ASAN+UBSAN build
+make coverage           # Coverage build
+make coverage-install   # Install Coverage build
+make fuzz               # Fuzzing build
+make fuzz-corpus        # Generate initial corpus
+make fuzz-run           # Start fuzzing
+make fuzz-coverage      # Generate coverage report of fuzzer progress
 ```
 
 **NOTE:** `make format` performs in-place updates of uncommited project source files!
@@ -403,7 +406,7 @@ Build variants have separate output directories:
 - **`build/debug`**: Debug build artifacts
 - **`build/release`**: Release build artifacts 
 - **`build/sanitize`**: ASAN+UBSAN build artifacts
-- **`build/cover`**: Coverage build artifacts
+- **`build/coverage`**: Coverage build artifacts
 - **`build/fuzz`**: Fuzzing build artifacts
 
 ## Unit Tests
