@@ -379,24 +379,23 @@ bool MyHash_update(MyHash* hash, const void* data, size_t dataLen);
 A makefile wrapper provides easy access to release checks:
 
 ```bash
-make check              # Pre-commit checks
-make check-extra        # Extra pre-commit checks
-make format             # Format code
-make lint               # Lint code
-make test               # Run tests
-make test-coverage      # Run tests with coverage
-make debug              # Debug build
-make debug-install      # Install debug build
-make release            # Release build
-make release-install    # Install release build
-make sanitize           # ASAN+UBSAN build
-make sanitize-install   # Install ASAN+UBSAN build
-make coverage           # Coverage build
-make coverage-install   # Install Coverage build
-make fuzz               # Fuzzing build
-make fuzz-corpus        # Generate initial corpus
-make fuzz-run           # Start fuzzing
-make fuzz-coverage      # Generate coverage report of fuzzer progress
+make check             # Pre-commit checks
+make check-extra       # Extra pre-commit checks
+make format            # Format code
+make lint              # Lint code
+make test              # Run tests
+make test-coverage     # Run tests with coverage
+make debug             # Debug build
+make debug-install     # Install debug build
+make release           # Release build
+make release-install   # Install release build
+make sanitize          # ASAN+UBSAN build
+make sanitize-install  # Install ASAN+UBSAN build
+make coverage          # Coverage build
+make coverage-install  # Install Coverage build
+make fuzz              # Start fuzzing
+make fuzz-corpus       # Generate initial corpus
+make fuzz-coverage     # Generate coverage report of fuzzing progress
 ```
 
 **NOTE:** `make format` performs in-place updates of uncommited project source files!
