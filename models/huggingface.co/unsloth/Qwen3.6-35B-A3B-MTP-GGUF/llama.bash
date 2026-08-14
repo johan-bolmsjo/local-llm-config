@@ -66,11 +66,11 @@ llama_run_model() {
     case "${LLM_MODEL_TUNING:=0}" in
 	1)
 	    echo "Thinking mode for general tasks"
-	    ARGS+=(--temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.0 --presence-penalty 1.5 --repeat-penalty 1.0 --reasoning on)
+	    ARGS+=(--temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.0 --presence-penalty 1.5 --repeat-penalty 1.0 --reasoning on --reasoning-preserve)
 	    ;;
 	2)
 	    echo "Thinking mode for precise coding tasks"
-	    ARGS+=(--temp 0.6 --top-p 0.95 --top-k 20 --min-p 0.0 --presence-penalty 0.0 --repeat-penalty 1.0 --reasoning on)
+	    ARGS+=(--temp 0.6 --top-p 0.95 --top-k 20 --min-p 0.0 --presence-penalty 0.0 --repeat-penalty 1.0 --reasoning on --reasoning-preserve)
 	    ;;
 	3)
 	    echo "Instruct (or non-thinking) mode for general tasks"
