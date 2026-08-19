@@ -5,6 +5,26 @@
             "api": "openai-completions",
             "apiKey": "none",
             "models": [
+                { "id": "local/qwen3.8-27b",
+                  "contextWindow": 256000,
+                  "maxTokens": 96000,
+                  "input": ["text", "image"],
+                  "reasoning": true,
+                  "thinkingLevelMap": {
+                      "off": "none",
+                      "minimal": null,
+                      "low": "low",
+                      "medium": "medium",
+                      "high": null,
+                      "xhigh": "xhigh"
+                  },
+                  "compat": {
+                      "thinkingFormat": "chat-template",
+                      "chatTemplateKwargs": {
+                          "reasoning_effort": { "$var": "thinking.effort" }
+                      }
+                  }
+                },
                 { "id": "local/128k-text-image",
                   "contextWindow": 128000,
                   "input": ["text", "image"]

@@ -16,7 +16,7 @@ llama_timestamp_lines() {
 
 # llama_run_model :: Run llama-server in a primitive restart loop, collect logs
 #
-# Model: Qwen3.8-27B (8-bit quant, 128k context window, MTP)
+# Model: Qwen3.8-27B with MTP
 #
 llama_run_model() {
     if [ -z "$LLM_MODEL_DIR" ]; then
@@ -24,8 +24,9 @@ llama_run_model() {
 	return 1
     fi
 
-    # Regular model
-    local -a ARGS=(--model "$LLM_MODEL_DIR/Qwen3.8-27B-UD-Q8_K_XL.gguf")
+    # Regular model. Pick your poison!
+    #local -a ARGS=(--model "$LLM_MODEL_DIR/Qwen3.8-27B-UD-Q8_K_XL.gguf")
+    local -a ARGS=(--model "$LLM_MODEL_DIR/Qwen3.8-27B-UD-Q6_K_L.gguf")
 
     # Vision model
     ARGS+=(--mmproj "$LLM_MODEL_DIR/mmproj-F16.gguf")
@@ -37,7 +38,7 @@ llama_run_model() {
     ARGS+=(--host 127.0.0.1 --port 1337)
 
     # API protocol
-    ARGS+=(--jinja)
+    ARGS+=(--jinja --reasoning-format deepseek)
 
     # ROCm must haves
     ARGS+=(--no-mmap --flash-attn on)
@@ -50,7 +51,8 @@ llama_run_model() {
     #   --ctx-size    Context size in tokens
     #   --parallel    Number of server slots
     #
-    ARGS+=(--kv-unified --cache-type-k f16 --cache-type-v f16 --ctx-size 131072 --parallel 1)
+    #ARGS+=(--kv-unified --cache-type-k f16 --cache-type-v f16 --ctx-size 196608 --parallel 1)
+    ARGS+=(--kv-unified --cache-type-k f16 --cache-type-v f16 --ctx-size 262144 --parallel 1)
 
     # Prompt cache tuning:
     #
@@ -59,31 +61,35 @@ llama_run_model() {
     #   --batch-size
     #   --ubatch-size
     #
-
-    # Want 16 checkpoints but runs out of memory with 64 GB
-    ARGS+=(--cache-ram 2048 --ctx-checkpoints 1 --batch-size 1024 --ubatch-size 1024)
+    ARGS+=(--cache-ram 8192 --ctx-checkpoints 32 --batch-size 1024 --ubatch-size 1024)
 
     # Multi Token Prediction (MTP), speeds up token generation.
-    ARGS+=(--spec-type draft-mtp --spec-draft-n-max 2)
+    ARGS+=(--spec-type draft-mtp --spec-draft-n-max 3)
 
-    # TODO: Try different reasoning levels
-    # --chat-template-kwargs '{"preserve_thinking":true,"reasoning_effort":"xhigh"}' (default)
-    # --chat-template-kwargs '{"preserve_thinking":true,"reasoning_effort":"medium"}'
-    # --chat-template-kwargs '{"preserve_thinking":true,"reasoning_effort":"low"}'
+    # External chat template with some fixes.
+    ARGS+=(--chat-template-file chat_template-general.jinja )
 
     # Model tuning: https://huggingface.co/unsloth/Qwen3.8-27B-GGUF
     case "${LLM_MODEL_TUNING:=0}" in
 	1)
-	    echo "Thinking mode"
-	    ARGS+=(--temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.0 --presence-penalty 0.0 --repeat-penalty 1.0 --reasoning on --reasoning-preserve)
+	    echo "Official thinking mode"
+	    ARGS+=(--temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.0 --reasoning on --reasoning-preserve)
+	    # Tweaked chat template which supposedly fixes some issues.
+	    ARGS+=(--chat-template-file chat_template-general.jinja )
 	    ;;
 	2)
-	    echo "Thinking mode (compatibility with Qwen3.6 launcher) "
-	    ARGS+=(--temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.0 --presence-penalty 0.0 --repeat-penalty 1.0 --reasoning on --reasoning-preserve)
+	    echo "Custom thinking mode"
+	    # Temperature for custom development centric chat template:
+	    # - https://old.reddit.com/r/LocalLLaMA/comments/1vqvrh0/qwen_38_27b_overthinking_it_has_to_be_done_it_has/p48ot9f/
+	    ARGS+=(--temp 0.7 --top-p 0.95 --top-k 20 --min-p 0.0 --reasoning on --reasoning-preserve)
+	    # Tweaked chat template with additional steering for efficiency.
+	    ARGS+=(--chat-template-file chat_template-devel.jinja )
 	    ;;
 	3)
 	    echo "Instruct (or non-thinking) mode"
-	    ARGS+=(--temp 0.7 --top-p 0.80 --top-k 20 --min-p 0.0 --presence-penalty 1.5 --repeat-penalty 1.0 --reasoning off)
+	    ARGS+=(--temp 0.7 --top-p 0.80 --top-k 20 --min-p 0.0 --presence-penalty 1.5 --reasoning off)
+	    # Tweaked chat template which supposedly fixes some issues.
+	    ARGS+=(--chat-template-file chat_template-general.jinja )
 	    ;;
     esac
     ARGS+=(--image-min-tokens 1024)

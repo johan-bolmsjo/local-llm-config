@@ -48,6 +48,8 @@ llama_run_model() {
     # ROCm must haves
     ARGS+=(--no-mmap --flash-attn on)
 
+    ARGS+=(--no-warmup)
+
     # KV cache tuning:
     #
     #   --kv-unified  Use a single KV buffer across all sequences
