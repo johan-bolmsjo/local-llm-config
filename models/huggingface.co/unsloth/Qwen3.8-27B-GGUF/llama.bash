@@ -66,9 +66,6 @@ llama_run_model() {
     # Multi Token Prediction (MTP), speeds up token generation.
     ARGS+=(--spec-type draft-mtp --spec-draft-n-max 3)
 
-    # External chat template with some fixes.
-    ARGS+=(--chat-template-file chat_template-general.jinja )
-
     # Model tuning: https://huggingface.co/unsloth/Qwen3.8-27B-GGUF
     case "${LLM_MODEL_TUNING:=0}" in
 	1)
