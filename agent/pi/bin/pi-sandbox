@@ -58,7 +58,6 @@ done <<EOF
 /etc/ssl
 EOF
 
-
 # Default empty /home
 ARGS+=(--dir /home)
 
@@ -85,6 +84,12 @@ $WORK_DIR
 $(go env GOCACHE 2>/dev/null || true)
 $(go env GOMODCACHE 2>/dev/null || true)
 EOF
+
+# read/write: Wayland socket for clipboard
+WAYLAND_SOCKET="$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY"
+if [ -n "$XDG_RUNTIME_DIR" ] && [ -n "$WAYLAND_DISPLAY" ] && [ -S "$WAYLAND_SOCKET" ]; then
+    ARGS+=(--ro-bind "$WAYLAND_SOCKET" "$WAYLAND_SOCKET")
+fi
 
 # Bar write access to workspace critical directories to prevent agent tampering.
 # Adjust if you want the agent to make code commit autonomously.
