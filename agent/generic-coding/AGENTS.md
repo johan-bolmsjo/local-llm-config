@@ -23,9 +23,10 @@ See README.md for an overview.
 
 #### Accepted abbreviations
 
-- e.g. (exempli gratia: for example)
-- i.e. (id est: that is)
-- API (application programming interface)
+- e.g. (exempli gratia: for example).
+- i.e. (id est: that is).
+- API (application programming interface).
+- Established protocol, product or company names.
 
 ### Design methodologies
 
