@@ -11,37 +11,37 @@ See README.md for an overview.
 #### General writing
 
 - Use plain language without contrived metaphors.
-- Never use abbreviations except explicitly accepted ones.
-- Consider the document scope: Does the information belong?
+- Don't use abbreviations (except for the exempted ones).
+- Consider the document's scope: does the information belong there?
 
 #### Code comments
 
-- Use Go's API comment style: Lead with the name of the function or type it applies to.
-- Comment what is, not what was!
-- Never comment historical details or circumstances.
-- Never refer to external documents or task instructions in comments.
+- Use Go's API comment style: lead with the name of the function or type it applies to.
+- Comment on the current design, not its history.
+- Don't refer to external documents or task instructions in comments.
 
-#### Accepted abbreviations
+#### Exempted abbreviations
 
-- e.g. (exempli gratia: for example).
-- i.e. (id est: that is).
+- E.g. (exempli gratia: for example).
+- I.e. (id est: that is).
 - API (application programming interface).
-- Established protocol, product or company names.
+- Established protocols, products or company names.
 
 ### Design methodologies
 
-- Never abbreviate named (not anonymous) types or functions.
+- Don't abbreviate function or type names.
 - Use consistent naming of functions, types and variables.
-- Use the minimum scope possible for definitions.
+- Use the minimum scope possible for function, type and variable definitions.
+- Use pure functions and immutable data definitions when appropriate.
 - Consider the responsibilities of code modules and strive for natural API semantics.
-- Keep code "DRY": Avoid excessive copy paste.
-- Avoid inline magic constants: Name constants to provide context.
+- Avoid duplication of code and data.
+- Avoid inline magic constants: name constants to provide context.
 
 ### Unit testing
 
-- Group tests by tested functionality.
+- Group tests by the functionality being tested.
 - Keep tests focused to a single property.
-- Use table driven tests for multiple inputs.
-- Minimize the number of tests needed for test coverage.
+- Use data tables for testing the same logic with multiple inputs.
+- Minimize the number of tests needed to achieve test coverage.
 - Comment each test function, explaining its purpose.
-- Make sure that unit tests fail without associated bug-fix.
+- When adding a test specifically for a bug fix, make sure it fails without the fix in place.
